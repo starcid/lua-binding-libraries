@@ -1,0 +1,5 @@
+LIBRARY xerces.dll
+DESCRIPTION "xerces"
+VERSION 0.1
+EXPORTS
+luaopen_xerces
