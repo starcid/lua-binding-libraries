@@ -1,0 +1,5 @@
+LIBRARY tokenizer.dll
+DESCRIPTION "tokenizer"
+VERSION 0.1
+EXPORTS
+luaopen_tokenizer

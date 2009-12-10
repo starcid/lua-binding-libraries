@@ -1,0 +1,10 @@
+
+
+lib lua51 
+	: 
+	: <name>lua5.1 
+	  <toolset>gcc,<variant>release:<search>C:/MyShareware/CodingStudio/vendor/mingw_release
+	  <toolset>gcc,<variant>debug:<search>C:/MyShareware/CodingStudio/vendor/mingw_debug
+	  <toolset>msvc,<variant>release:<search>C:/MyShareware/CodingStudio/vendor/msvc_release
+	  <toolset>msvc,<variant>debug:<search>C:/MyShareware/CodingStudio/vendor/msvc_debug
+	;

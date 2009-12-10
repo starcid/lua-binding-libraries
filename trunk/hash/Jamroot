@@ -1,0 +1,21 @@
+
+
+lib lua51 
+	: 
+	: <name>lua5.1 
+	  <toolset>gcc,<variant>release:<search>C:/MyShareware/CodingStudio/vendor/mingw_release
+	  <toolset>gcc,<variant>debug:<search>C:/MyShareware/CodingStudio/vendor/mingw_debug
+	  <toolset>msvc,<variant>release:<search>C:/MyShareware/CodingStudio/vendor/msvc_release
+	  <toolset>msvc,<variant>debug:<search>C:/MyShareware/CodingStudio/vendor/msvc_debug
+	;
+
+lib hash
+   : hash.cpp lua51
+   : <link>shared
+     <include>C:/boost/boost
+     <include>c:/MyShareware/CodingStudio/vendorsrc/lua/include
+     <toolset>msvc:<cxxflags>/wd4819
+     <toolset>msvc:<define>_CRT_SECURE_NO_WARNINGS
+     <toolset>gcc:<cxxflags>-Wl,--output-def,hash.def
+     <toolset>msvc:<linkflags>/DEF:"hash.def"
+   ;

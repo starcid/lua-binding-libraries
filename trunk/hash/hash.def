@@ -1,0 +1,3 @@
+LIBRARY hash.dll
+EXPORTS
+luaopen_hash
