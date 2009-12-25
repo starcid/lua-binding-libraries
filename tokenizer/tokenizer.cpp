@@ -69,12 +69,12 @@ static int parse(lua_State* L)
 
     lua_newtable (L);
 
-    int index = 0;
+    int index = 1;
     for (vector<string>::iterator it = arr.begin();
         arr.end() != it;
-        ++it)
+        ++it, ++index)
     {
-        lua_pushnumber (L,index++);
+        lua_pushnumber (L,index);
         lua_pushstring (L, it->c_str());
         lua_rawset (L, -3);
     }
@@ -133,12 +133,12 @@ static int extract(lua_State* L)
 
     lua_newtable (L);
 
-    int index = 0;
+    int index = 1;
     for (vector<string>::iterator it = arr.begin();
         arr.end() != it;
-        ++it)
+        ++it, ++index)
     {
-        lua_pushnumber (L,index++);
+        lua_pushnumber (L,index);
         lua_pushstring (L, it->c_str());
         lua_rawset (L, -3);
     }
