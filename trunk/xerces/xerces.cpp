@@ -496,7 +496,8 @@ extern "C"{
 
             if (nodelist.empty())
             {
-                lua_pushnil(L);
+                //lua_pushnil(L);
+                lua_newtable (L);
             }
             else
             {
@@ -613,7 +614,8 @@ extern "C"{
 
             if (nodelist.empty())
             {
-                lua_pushnil(L);
+                //lua_pushnil(L);
+                lua_newtable (L);
             }
             else
             {
