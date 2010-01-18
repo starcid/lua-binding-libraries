@@ -114,6 +114,7 @@ public:
         MemBufInputSource* memBufIS = new MemBufInputSource((const XMLByte*)pszXML, strlen(pszXML), "prodInfo", false);
         m_parser->parse(*memBufIS);
         m_doc = m_parser->getDocument();
+        delete memBufIS;
     }
 
     void LoadXML(const wchar_t* pwszXML)
