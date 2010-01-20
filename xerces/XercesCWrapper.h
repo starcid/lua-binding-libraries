@@ -59,6 +59,11 @@ public:
 
     ~CXmlDocumentWrapper()
     {
+        if (m_doc)
+        {
+            m_doc->release();            
+        }
+
         delete m_parser;
         m_parser = NULL;
     }
@@ -72,7 +77,9 @@ public:
 
     bool Load(const char * pszFile)
     {
-        return Load(XMLString::transcode(pszFile));
+        m_parser->parse(pszFile);
+        m_doc = m_parser->getDocument();
+        return (m_doc != NULL);
     }
 
     DOMElement* AsNode()
@@ -119,7 +126,9 @@ public:
 
     void LoadXML(const wchar_t* pwszXML)
     {
-        LoadXML(XMLString::transcode(pwszXML));
+        char *pszXML = XMLString::transcode(pwszXML);
+        LoadXML((const char *)pszXML);
+        XMLString::release(&pszXML);
     }
 };
 
@@ -224,7 +233,10 @@ public:
 #ifdef _UNICODE
                 return nm->item(index)->getNodeValue();
 #else
-                return XMLString::transcode(nm->item(index)->getNodeValue());
+                char * pAttrVal = XMLString::transcode(nm->item(index)->getNodeValue());
+                tstring ret(pAttrVal);
+                XMLString::release(&pAttrVal);
+                return ret;
 #endif
             }
         }
@@ -242,7 +254,10 @@ public:
 #ifdef _UNICODE
                 return nm->item(index)->getNodeName();
 #else
-                return XMLString::transcode(nm->item(index)->getNodeName());
+                char * pAttrname = XMLString::transcode(nm->item(index)->getNodeName());
+                tstring ret(pAttrname);
+                XMLString::release(&pAttrname);
+                return ret;
 #endif
             }
         }
@@ -257,13 +272,14 @@ public:
             DOMElement* pElement = dynamic_cast<DOMElement*>(m_pNode);
             if (pElement)
             {
-                return pElement->hasAttribute(
 #ifdef _UNICODE
-                    AttribName
+                return pElement->hasAttribute(AttribName);
 #else
-                    XMLString::transcode(AttribName)
+                XMLCh *pAttrName = XMLString::transcode(AttribName);
+                bool ret = pElement->hasAttribute( pAttrName);
+                XMLString::release(&pAttrName);
+                return ret;
 #endif
-                    );
             }
         }
         return false;
@@ -288,7 +304,10 @@ public:
 #ifdef _UNICODE
         return m_pNode->getNodeName();
 #else
-        return XMLString::transcode(m_pNode->getNodeName());
+        char * pName = XMLString::transcode(m_pNode->getNodeName());
+        tstring ret(pName);
+        XMLString::release(&pName);
+        return ret;
 #endif
     }
 
@@ -323,7 +342,8 @@ public:
                 DOMNode* pChild = pChildren->item(nIndex);
                 if (pChild && wcscmp(searchStr, pChild->getNodeName()) == 0)
                 {
-                    m_pNode->removeChild(pChild);
+                    DOMNode * p = m_pNode->removeChild(pChild);
+                    p->release();
                 }
             }
         }
@@ -357,13 +377,13 @@ public:
         if (m_pNode)
         {
             XERCES_CPP_NAMESPACE::DOMDocument* pDoc = m_pNode->getOwnerDocument();
-            DOMElement* newNode= pDoc->createElement(
 #ifdef _UNICODE
-                nodeName
+            DOMElement* newNode= pDoc->createElement(nodeName);
 #else
-                XMLString::transcode(nodeName)
+            XMLCh * pNodeName = XMLString::transcode(nodeName);
+            DOMElement* newNode= pDoc->createElement(pNodeName);
+            XMLString::release(&pNodeName);
 #endif
-                );
             DOMNode* refNext = refNode->getNextSibling();
             if (refNext)
             {
@@ -383,13 +403,13 @@ public:
         if (m_pNode)
         {
             XERCES_CPP_NAMESPACE::DOMDocument* pDoc = m_pNode->getOwnerDocument();
-            DOMElement* newNode= pDoc->createElement(
 #ifdef _UNICODE
-                nodeName
+            DOMElement* newNode= pDoc->createElement(nodeName);
 #else
-                XMLString::transcode(nodeName)
+            XMLCh * pNodeName = XMLString::transcode(nodeName);
+            DOMElement* newNode= pDoc->createElement(pNodeName);
+            XMLString::release(&pNodeName);
 #endif
-            );
             return m_pNode->insertBefore(newNode, refNode);
         }
 
@@ -401,13 +421,13 @@ public:
         if (m_pNode)
         {
             XERCES_CPP_NAMESPACE::DOMDocument* pDoc = m_pNode->getOwnerDocument();
-            DOMElement* newNode= pDoc->createElement(
 #ifdef _UNICODE
-                nodeName
+            DOMElement* newNode= pDoc->createElement(nodeName);
 #else
-                XMLString::transcode(nodeName)
+            XMLCh * pNodeName = XMLString::transcode(nodeName);
+            DOMElement* newNode= pDoc->createElement(pNodeName);
+            XMLString::release(&pNodeName);
 #endif
-            );
             return InsertNode(index, newNode);
         }
 
@@ -435,13 +455,13 @@ public:
         if (m_pNode)
         {
             XERCES_CPP_NAMESPACE::DOMDocument* pDoc = m_pNode->getOwnerDocument();
-            DOMElement* newNode= pDoc->createElement(
 #ifdef _UNICODE
-                nodeName
+            DOMElement* newNode= pDoc->createElement(nodeName);
 #else
-                XMLString::transcode(nodeName)
+            XMLCh * pNodeName = XMLString::transcode(nodeName);
+            DOMElement* newNode= pDoc->createElement(pNodeName);
+            XMLString::release(&pNodeName);
 #endif
-            );
             return AppendNode(newNode);
         }
         return NULL;
@@ -471,7 +491,9 @@ public:
     {
         if (m_pNode)
         {
-            return m_pNode->removeChild(pNode);
+            DOMNode * removedElement = m_pNode->removeChild(pNode);
+            removedElement->release();
+            return removedElement;
         }
 
         return NULL;
@@ -500,16 +522,25 @@ public:
             for (XMLSize_t nIndex = 0; nIndex < nCount; nIndex++)
             {
                 DOMNode* pChild = pChildren->item(nIndex);
-                if (pChild && wcscmp(
 #ifdef _UNICODE
+                if (pChild && wcscmp(
                     searchString, 
-#else
-                    XMLString::transcode(searchString),
-#endif
                     pChild->getNodeName()) == 0)
                 {
                     return pChild;
                 }
+#else
+                XMLCh * pSearchString = XMLString::transcode(searchString);
+
+                if (pChild && wcscmp(
+                    (wchar_t *)pSearchString, 
+                    pChild->getNodeName()) == 0)
+                {
+                    XMLString::release(&pSearchString);
+                    return pChild;
+                }
+                XMLString::release(&pSearchString);
+#endif
             }
         }
 
@@ -523,13 +554,14 @@ public:
             DOMElement* pElement = dynamic_cast<DOMElement*>(m_pNode);
             if (pElement)
             {
-                return pElement->getElementsByTagName(
 #ifdef _UNICODE
-                    searchString
+                return pElement->getElementsByTagName(searchString);
 #else
-                    XMLString::transcode(searchString)
+                XMLCh * pSearchString = XMLString::transcode(searchString);
+                DOMNodeList* pNL = pElement->getElementsByTagName(pSearchString);
+                XMLString::release(&pSearchString);
+                return pNL;
 #endif
-                    );
             }
         }
         return NULL;
@@ -562,13 +594,15 @@ public:
             DOMElement* pElement = dynamic_cast<DOMElement*>(m_pNode);
             if (pElement)
             {
-                pElement->setAttribute(
 #ifdef _UNICODE
-                    valueName, value
+                pElement->setAttribute(valueName, value);
 #else
-                    XMLString::transcode(valueName),XMLString::transcode(value)
+                XMLCh * pValueName = XMLString::transcode(valueName);
+                XMLCh * pValue = XMLString::transcode(value);
+                pElement->setAttribute(pValueName, pValue);
+                XMLString::release(&pValue);
+                XMLString::release(&pValueName);
 #endif
-                    );
             }
         }
     }
@@ -672,13 +706,15 @@ public:
     {
         if (m_pNode)
         {
-            m_pNode->setTextContent(
+
 #ifdef _UNICODE
-                text
+            m_pNode->setTextContent(text);
 #else
-                XMLString::transcode(text)
+            XMLCh * pText = XMLString::transcode(text);
+            m_pNode->setTextContent(pText);
+            XMLString::release(&pText);
 #endif
-                );
+                
         }
     }
     void SetText(int text)
@@ -774,7 +810,10 @@ public:
 #ifdef _UNICODE
                 return pEle->getAttribute(valueName);
 #else
-                return XMLString::transcode(pEle->getAttribute(XMLString::transcode(valueName)));
+                char * pValue = XMLString::transcode(pEle->getAttribute(XMLString::transcode(valueName)));
+                tstring val(pValue);
+                XMLString::release(&pValue);
+                return val;
 #endif
             }
         }
@@ -826,17 +865,18 @@ public:
 
     tstring GetText()
     {
-        tstring text;
         if (m_pNode)
         {
 #ifdef _UNICODE
-            text = m_pNode->getTextContent();
+            return tstring(m_pNode->getTextContent());
 #else
-            text = XMLString::transcode(m_pNode->getTextContent());
+            char * pText = XMLString::transcode(m_pNode->getTextContent());
+            tstring text(pText);
+            XMLString::release(&pText);
 #endif
         }
 
-        return text;
+        return tstring();
     }
 
     int GetIntText()
@@ -847,7 +887,9 @@ public:
 #ifdef _UNICODE
             tstring text = m_pNode->getTextContent();
 #else
-            tstring text = XMLString::transcode(m_pNode->getTextContent());
+            char * pText  = XMLString::transcode(m_pNode->getTextContent());
+            tstring text(pText);
+            XMLString::release(&pText);
 #endif
             if (!text.empty())
             {
@@ -866,7 +908,9 @@ public:
 #ifdef _UNICODE
             tstring text = m_pNode->getTextContent();
 #else
-            tstring text = XMLString::transcode(m_pNode->getTextContent());
+            char * pText  = XMLString::transcode(m_pNode->getTextContent());
+            tstring text(pText);
+            XMLString::release(&pText);
 #endif
             if (!text.empty())
             {
@@ -886,7 +930,9 @@ public:
 #ifdef _UNICODE
             tstring text = m_pNode->getTextContent();
 #else
-            tstring text = XMLString::transcode(m_pNode->getTextContent());
+            char * pText  = XMLString::transcode(m_pNode->getTextContent());
+            tstring text(pText);
+            XMLString::release(&pText);
 #endif
             if (!text.empty())
             {
@@ -909,7 +955,9 @@ public:
 #ifdef _UNICODE
             tstring text = m_pNode->getTextContent();
 #else
-            tstring text = XMLString::transcode(m_pNode->getTextContent());
+            char * pText  = XMLString::transcode(m_pNode->getTextContent());
+            tstring text(pText);
+            XMLString::release(&pText);
 #endif
             UUIDFromString(text, uuid);
         }

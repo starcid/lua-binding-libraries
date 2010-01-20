@@ -609,17 +609,43 @@ extern "C"{
         lua_pop(L, 2);
         if (xmlnode && xmlnode->IsValid())
         {
-            CXmlNodelistWrapper nodelist = xmlnode->FindNodes(nodename);
-
-
-            if (nodelist.empty())
+            CXmlNodelistWrapper nodelist = xmlnode->ChildNodes();
+            lua_newtable (L);
+            if (!nodelist.empty())
             {
-                //lua_pushnil(L);
-                lua_newtable (L);
+                int index = 0;
+                for (size_t nIndex = 0; nIndex < nodelist.size(); nIndex++)
+                {
+                    CXmlNodeWrapper node = nodelist.at(nIndex);
+                    if (node.GetNodeType() == DOMNode::ELEMENT_NODE
+                        && node.Name() == nodename)
+                    {
+                        lua_pushnumber (L,++index);
+                        CXmlNodeWrapper_ud* xmlnode_ud = (CXmlNodeWrapper_ud*)lua_newuserdata(L, sizeof(CXmlNodeWrapper_ud));
+                        xmlnode_ud->xmlnode = new CXmlNodeWrapper(nodelist.at(nIndex));
+                        luaL_newmetatable(L, "CXmlNode");
+                        lua_setmetatable(L, -2);
+                        lua_rawset (L, -3);
+                        increase_tixmldocument_refcount(L, xmlnode_ud->xmlnode->Document());
+                    }
+                }  
             }
-            else
+        }
+    }
+
+    static int CXmlNode_selectall(lua_State *L)
+    {
+        CXmlNodeWrapper_ud* xmlnode_userdata = (CXmlNodeWrapper_ud *) luaL_checkudata(L, 1, "CXmlNode");
+        CXmlNodeWrapper *xmlnode = xmlnode_userdata->xmlnode;
+        const char* nodename = luaL_checkstring(L, 2);
+
+        lua_pop(L, 2);
+        if (xmlnode && xmlnode->IsValid())
+        {
+            CXmlNodelistWrapper nodelist = xmlnode->FindNodes(nodename);
+            lua_newtable (L);
+            if (!nodelist.empty())
             {
-                lua_newtable (L);
                 int index = 0;
                 for (size_t nIndex = 0; nIndex < nodelist.size(); nIndex++)
                 {
@@ -658,6 +684,7 @@ extern "C"{
         { "append", CXmlNode_append },
         { "find", CXmlNode_find },
         { "select", CXmlNode_select },
+        { "select_all", CXmlNode_selectall },
         { NULL, NULL }
     };
 
