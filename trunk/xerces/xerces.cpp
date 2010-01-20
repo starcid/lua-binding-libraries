@@ -631,6 +631,12 @@ extern "C"{
                 }  
             }
         }
+        else
+        {
+            return luaL_error(L, "invalid node");
+        }  
+
+        return 1;
     }
 
     static int CXmlNode_selectall(lua_State *L)
