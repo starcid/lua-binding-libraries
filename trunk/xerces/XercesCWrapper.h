@@ -59,11 +59,6 @@ public:
 
     ~CXmlDocumentWrapper()
     {
-        if (m_doc)
-        {
-            m_doc->release();            
-        }
-
         delete m_parser;
         m_parser = NULL;
     }
