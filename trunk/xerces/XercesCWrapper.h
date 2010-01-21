@@ -813,7 +813,7 @@ public:
             }
         }
 
-        return _T("");
+        return tstring();
     }
     int GetIntValue(const TCHAR* valueName)
     {
@@ -868,6 +868,7 @@ public:
             char * pText = XMLString::transcode(m_pNode->getTextContent());
             tstring text(pText);
             XMLString::release(&pText);
+            return text;
 #endif
         }
 
