@@ -87,6 +87,40 @@ public:
         return NULL;
     }
 
+    const tstring GetInputEncoding()
+    {
+        if (m_doc)
+        {
+#ifdef UNICODE
+            return tstring(m_doc->getInputEncoding());
+#else
+            char * pEncoding = XMLString::transcode(m_doc->getInputEncoding());
+            tstring retEncoding(pEncoding);
+            XMLString::release(&pEncoding);
+            return retEncoding;
+#endif
+        }
+
+        return tstring();
+    }
+
+    const tstring GetXMLEncoding()
+    {
+        if (m_doc)
+        {
+#ifdef UNICODE
+            return tstring(m_doc->getXmlEncoding());
+#else
+            char * pEncoding = XMLString::transcode(m_doc->getXmlEncoding());
+            tstring retEncoding(pEncoding);
+            XMLString::release(&pEncoding);
+            return retEncoding;
+#endif
+        }
+
+        return tstring();
+    }
+
     bool Save(const TCHAR* pszFile, bool bPrettyPrint = true)
     {
         bool bRet = false;

@@ -265,11 +265,39 @@ extern "C"{
         return 1;
     }
 
+    static int CXmlDocumentWrapper_xmlencoding(lua_State* L)
+    {
+        CXmlDocumentWrapper_ud* xmldoc_userdata = (CXmlDocumentWrapper_ud *) luaL_checkudata(L, 1, "CXmlDocument");
+        CXmlDocumentWrapper *xmldoc = xmldoc_userdata->xmldoc;
+
+        lua_pop(L, 1);
+
+        string encoding = xmldoc->GetXMLEncoding();
+        lua_pushstring(L, encoding.c_str());
+
+        return 1;
+    }
+
+    static int CXmlDocumentWrapper_inputencoding(lua_State* L)
+    {
+        CXmlDocumentWrapper_ud* xmldoc_userdata = (CXmlDocumentWrapper_ud *) luaL_checkudata(L, 1, "CXmlDocument");
+        CXmlDocumentWrapper *xmldoc = xmldoc_userdata->xmldoc;
+
+        lua_pop(L, 1);
+
+        string encoding = xmldoc->GetInputEncoding();
+        lua_pushstring(L, encoding.c_str());
+
+        return 1;
+    }
+
     static const struct luaL_reg CXmlDocumentWrapper_methods[] = {
         { "__gc", CXmlDocumentWrapper_close },
         { "__tostring", CXmlDocumentWrapper_repr },
         { "save", CXmlDocumentWrapper_save },
         { "root", CXmlDocumentWrapper_root},
+        { "xml_encoding", CXmlDocumentWrapper_xmlencoding },
+        { "input_encoding", CXmlDocumentWrapper_inputencoding },
         { NULL, NULL }
     };
 
