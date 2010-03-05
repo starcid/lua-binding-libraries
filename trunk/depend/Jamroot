@@ -1,0 +1,24 @@
+import path ;
+
+lib lua51 
+	: 
+	: <name>lua5.1 
+	  <toolset>gcc,<variant>release:<search>C:/MyShareware/CodingStudio/vendor/mingw_release
+	  <toolset>gcc,<variant>debug:<search>C:/MyShareware/CodingStudio/vendor/mingw_debug
+	  <toolset>msvc,<variant>release:<search>C:/MyShareware/CodingStudio/vendor/msvc_release
+	  <toolset>msvc,<variant>debug:<search>C:/MyShareware/CodingStudio/vendor/msvc_debug
+	  <search>C:/MyShareware/CodingStudio/vendor/msvc_release
+	;
+
+lib depend
+   : [ path.glob-tree . : *.cpp ]  lua51
+   : <link>shared
+     <linkflags>/DEF:"depend.def"
+     <toolset>msvc:<cxxflags>/wd4819
+	 <define>WIN32_LEAN_AND_MEAN
+	 <define>_WIN32_WINNT=0x501
+	 <define>DETOURS_X86
+	 <include>.
+     <include>C:/boost/boost
+     <include>c:/MyShareware/CodingStudio/vendorsrc/lua/include
+   ;
