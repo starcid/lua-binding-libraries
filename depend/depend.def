@@ -1,0 +1,4 @@
+LIBRARY depend.dll
+VERSION 0.1
+EXPORTS
+luaopen_depend
