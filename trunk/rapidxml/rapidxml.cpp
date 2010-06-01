@@ -1,13 +1,12 @@
 #include <windows.h>
 #include <tchar.h>
-#include "XercesCWrapper.h"
-#include "xerces.h"
+#include "RapidXMLWrapper.h"
+#include "rapidxml.h"
 using namespace std;
 
 static int DOCUMENTS_INDEX(LUA_NOREF);
 static int DOCUMENTS_REFCOUNT_INDEX(LUA_NOREF);
 
-static CXercesCInitializer g_XercesCInitializer;
 
 typedef struct CXmlDocumentWrapper_ud 
 {
@@ -25,7 +24,7 @@ typedef struct CXmlNodeWrapper_ud
 } CXmlNodeWrapper_ud;
 
 
-static void decrease_tixmldocument_refcount(lua_State *L, const XERCES_CPP_NAMESPACE::DOMDocument *xmldoc) 
+static void decrease_tixmldocument_refcount(lua_State *L, const rapidxml::xml_document<> *xmldoc) 
 {
     long docptr(reinterpret_cast<long>(xmldoc));
 
@@ -62,7 +61,7 @@ static void decrease_tixmldocument_refcount(lua_State *L, const XERCES_CPP_NAMES
     lua_pop(L, 2);
 }
 
-static void increase_tixmldocument_refcount(lua_State *L, const XERCES_CPP_NAMESPACE::DOMDocument* xmldoc) 
+static void increase_tixmldocument_refcount(lua_State *L, const rapidxml::xml_document<>* xmldoc) 
 {
     // increase ref. count for corresponding document in DOCUMENTS table
     long docptr(reinterpret_cast<long>(xmldoc));
@@ -170,7 +169,7 @@ extern "C"{
 
         CXmlDocumentWrapper *xmldoc = new CXmlDocumentWrapper;
         xpu->xmldoc = xmldoc;
-        xmldoc->LoadXML(xml);
+        xmldoc->LoadXML((char *)xml);
 
         // put document into DOCUMENTS_INDEX table
         lua_rawgeti(L, LUA_REGISTRYINDEX, DOCUMENTS_INDEX);
@@ -182,7 +181,7 @@ extern "C"{
         return 1;
     }
 
-    static const struct luaL_reg XercesCWapper[] = {
+    static const struct luaL_reg rapidxmlCWapper[] = {
         { "open", xmlopen},
         { "parse", xmlparse},
         {NULL, NULL} /* sentinel */
@@ -265,39 +264,12 @@ extern "C"{
         return 1;
     }
 
-    static int CXmlDocumentWrapper_xmlencoding(lua_State* L)
-    {
-        CXmlDocumentWrapper_ud* xmldoc_userdata = (CXmlDocumentWrapper_ud *) luaL_checkudata(L, 1, "CXmlDocument");
-        CXmlDocumentWrapper *xmldoc = xmldoc_userdata->xmldoc;
-
-        lua_pop(L, 1);
-
-        string encoding = xmldoc->GetXMLEncoding();
-        lua_pushstring(L, encoding.c_str());
-
-        return 1;
-    }
-
-    static int CXmlDocumentWrapper_inputencoding(lua_State* L)
-    {
-        CXmlDocumentWrapper_ud* xmldoc_userdata = (CXmlDocumentWrapper_ud *) luaL_checkudata(L, 1, "CXmlDocument");
-        CXmlDocumentWrapper *xmldoc = xmldoc_userdata->xmldoc;
-
-        lua_pop(L, 1);
-
-        string encoding = xmldoc->GetInputEncoding();
-        lua_pushstring(L, encoding.c_str());
-
-        return 1;
-    }
 
     static const struct luaL_reg CXmlDocumentWrapper_methods[] = {
         { "__gc", CXmlDocumentWrapper_close },
         { "__tostring", CXmlDocumentWrapper_repr },
         { "save", CXmlDocumentWrapper_save },
         { "root", CXmlDocumentWrapper_root},
-        { "xml_encoding", CXmlDocumentWrapper_xmlencoding },
-        { "input_encoding", CXmlDocumentWrapper_inputencoding },
         { NULL, NULL }
     };
 
@@ -632,7 +604,7 @@ extern "C"{
         lua_pop(L, 2);
         if (xmlnode && xmlnode->IsValid())
         {
-            DOMNode* pNode = xmlnode->FindNode(nodename);
+            rapidxml::xml_node<>* pNode = xmlnode->FindNode(nodename);
             if (pNode)
             {
                 CXmlNodeWrapper_ud* xmlnode_ud = (CXmlNodeWrapper_ud*)lua_newuserdata(L, sizeof(CXmlNodeWrapper_ud));
@@ -671,7 +643,7 @@ extern "C"{
                 for (size_t nIndex = 0; nIndex < nodelist.size(); nIndex++)
                 {
                     CXmlNodeWrapper node = nodelist.at(nIndex);
-                    if (node.GetNodeType() == DOMNode::ELEMENT_NODE
+                    if (node.GetNodeType() == rapidxml::node_element
                         && node.Name() == nodename)
                     {
                         lua_pushnumber (L,++index);
@@ -753,7 +725,7 @@ extern "C"{
         { NULL, NULL }
     };
 
-    int luaopen_xerces(lua_State* L) 
+    int luaopen_rapidxml(lua_State* L) 
     {
         // create metatable
         luaL_newmetatable(L, "CXmlDocument");
@@ -789,45 +761,36 @@ extern "C"{
         DOCUMENTS_REFCOUNT_INDEX = luaL_ref(L, LUA_REGISTRYINDEX);
 
         // register functions
-        luaL_register(L, "xerces", XercesCWapper);
-        lua_getglobal(L, "xerces");
+        luaL_register(L, "rapidxml", rapidxmlCWapper);
+        lua_getglobal(L, "rapidxml");
 
         char *version = getVersion();
         lua_pushliteral (L, "_VERSION");
         lua_pushstring (L, version );
         lua_rawset(L, -3);
-        lua_pushstring(L, "ELEMENT_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::ELEMENT_NODE);
+        lua_pushstring(L, "node_document");
+        lua_pushnumber(L,(lua_Number)rapidxml::node_document);
         lua_rawset(L,-3);
-        lua_pushstring(L, "ATTRIBUTE_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::ATTRIBUTE_NODE);
+        lua_pushstring(L, "node_element");
+        lua_pushnumber(L,(lua_Number)rapidxml::node_element);
         lua_rawset(L,-3);
-        lua_pushstring(L, "TEXT_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::TEXT_NODE);
+        lua_pushstring(L, "node_data");
+        lua_pushnumber(L,(lua_Number)rapidxml::node_data);
         lua_rawset(L,-3);
-        lua_pushstring(L, "CDATA_SECTION_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::CDATA_SECTION_NODE);
+        lua_pushstring(L, "node_cdata");
+        lua_pushnumber(L,(lua_Number)rapidxml::node_cdata);
         lua_rawset(L,-3);
-        lua_pushstring(L, "ENTITY_REFERENCE_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::ENTITY_REFERENCE_NODE);
+        lua_pushstring(L, "node_comment");
+        lua_pushnumber(L,(lua_Number)rapidxml::node_comment);
         lua_rawset(L,-3);
-        lua_pushstring(L, "PROCESSING_INSTRUCTION_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::PROCESSING_INSTRUCTION_NODE);
+        lua_pushstring(L, "node_declaration");
+        lua_pushnumber(L,(lua_Number)rapidxml::node_declaration);
         lua_rawset(L,-3);
-        lua_pushstring(L, "COMMENT_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::COMMENT_NODE);
+        lua_pushstring(L, "node_doctype");
+        lua_pushnumber(L,(lua_Number)rapidxml::node_doctype);
         lua_rawset(L,-3);
-        lua_pushstring(L, "DOCUMENT_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::DOCUMENT_NODE);
-        lua_rawset(L,-3);
-        lua_pushstring(L, "DOCUMENT_TYPE_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::DOCUMENT_TYPE_NODE);
-        lua_rawset(L,-3);
-        lua_pushstring(L, "DOCUMENT_FRAGMENT_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::DOCUMENT_FRAGMENT_NODE);
-        lua_rawset(L,-3);
-        lua_pushstring(L, "NOTATION_NODE");
-        lua_pushnumber(L,(lua_Number)DOMNode::NOTATION_NODE);
+        lua_pushstring(L, "node_pi");
+        lua_pushnumber(L,(lua_Number)rapidxml::node_pi);
         lua_rawset(L,-3);
 
         lua_pop(L, 1);
