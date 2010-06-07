@@ -427,7 +427,24 @@ extern "C"{
         lua_pop(L, 1);
         if (xmlnode && xmlnode->IsValid())
         {
-            lua_pushstring(L, xmlnode->GetText().c_str());
+            std::string text = xmlnode->GetText();
+            if (text.empty())
+            {
+                rapidxml::xml_node<>* node = xmlnode->Interface();
+                node = node->first_node();
+                if (node && node->type() == rapidxml::node_cdata)
+                {
+                    lua_pushstring(L, node->value());
+                }
+                else
+                {
+                    lua_pushstring(L, "");
+                }
+            }
+            else
+            {
+                lua_pushstring(L, text.c_str());
+            }
         } 
         else
         {
