@@ -131,9 +131,9 @@ public:
         return Save(RapidXMLWrapper::narrow(pwszFile).c_str(), bReserved);
     }
 
-    tstring GetXML()
+    std::string GetXML()
     {
-        basic_ostringstream<TCHAR> oss;
+        basic_ostringstream<char> oss;
         oss << m_doc;
         return oss.str();
     }
