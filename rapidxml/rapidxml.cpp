@@ -216,6 +216,17 @@ extern "C"{
         return 1;
     }
 
+    static int CXmlDocumentWrapper_xml(lua_State* L)
+    {
+        CXmlDocumentWrapper *xmldoc;
+        CXmlDocumentWrapper_ud* xmldoc_userdata = (CXmlDocumentWrapper_ud *) luaL_checkudata(L, 1, "CXmlDocument");
+        xmldoc = xmldoc_userdata->xmldoc;
+
+        string s = xmldoc->GetXML();
+        lua_pushstring(L, s.c_str());
+        return 1;
+    }
+
     static int CXmlDocumentWrapper_save(lua_State* L)
     {
         CXmlDocumentWrapper *xmldoc;
@@ -270,6 +281,7 @@ extern "C"{
         { "__tostring", CXmlDocumentWrapper_repr },
         { "save", CXmlDocumentWrapper_save },
         { "root", CXmlDocumentWrapper_root},
+        { "xml", CXmlDocumentWrapper_xml },
         { NULL, NULL }
     };
 

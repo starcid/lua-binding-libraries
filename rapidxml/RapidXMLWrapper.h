@@ -130,6 +130,13 @@ public:
     {
         return Save(RapidXMLWrapper::narrow(pwszFile).c_str(), bReserved);
     }
+
+    tstring GetXML()
+    {
+        basic_ostringstream<TCHAR> oss;
+        oss << m_doc;
+        return oss.str();
+    }
 };
 
 struct DOMNodeList 
