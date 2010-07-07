@@ -1,3 +1,10 @@
+/**
+*   \file RapidXMLWrapper.h
+*   \brief 
+*   \author YangFan
+*   \date 2010-7-2 22:16:02
+*/
+
 #ifndef RapidXMLWrapper_H_
 #define RapidXMLWrapper_H_
 
@@ -450,6 +457,29 @@ public:
         }
 
         return NULL;
+    }
+
+    void RemoveNodes(const TCHAR * searchString)
+    {
+        if (m_pNode)
+        {
+            rapidxml::xml_node<> * node =
+#ifdef _UNICODE
+            m_pNode->first_node(RapidXMLWrapper::narrow(searchString).c_str());
+#else
+            m_pNode->first_node(searchString);
+#endif
+            while (node)
+            {
+                m_pNode->remove_node(node);
+                node = 
+#ifdef _UNICODE
+                    m_pNode->next_sibling(RapidXMLWrapper::narrow(searchString).c_str());
+#else
+                    m_pNode->next_sibling(searchString);
+#endif
+            }
+        }
     }
 
     long NumNodes()
