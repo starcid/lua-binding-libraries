@@ -110,7 +110,7 @@ public:
         return false;
     }
 
-    bool LoadXML(char * pszXML)
+    bool LoadXML(const char * pszXML)
     {
         try 
         {
