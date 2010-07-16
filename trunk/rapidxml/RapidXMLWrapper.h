@@ -18,7 +18,6 @@
 #include <stdexcept>
 #include <tchar.h>
 #include "rapidxml.hpp"
-#include "rapidxml_iterators.hpp"
 #include "rapidxml_print.hpp"
 #include "rapidxml_utils.hpp"
 
@@ -965,7 +964,6 @@ public:
         if (m_pNode)
         {
             DOMNodeList nl;
-            rapidxml::xml_document<>* doc = m_pNode->document();
 #ifdef _UNICODE
             string searchStr = RapidXMLWrapper::narrow(searchString);
             for (rapidxml::xml_node<>* node = m_pNode->first_node(
@@ -1112,10 +1110,10 @@ public:
         return CXmlNodeIterator(iter.Index() + m_nIndex, m_nodelist);
     } 
 
-    CXmlNodeIterator operator-(CXmlNodeIterator& iter)
-    {
-        return CXmlNodeIterator(iter.Index() - m_nIndex, m_nodelist);
-    } 
+    //CXmlNodeIterator operator-(CXmlNodeIterator& iter)
+    //{
+    //    return CXmlNodeIterator(iter.Index() - m_nIndex, m_nodelist);
+    //} 
 
     bool operator>(CXmlNodeIterator& iter)
     {
@@ -1160,6 +1158,11 @@ public:
     }
 };
 
+inline CXmlNodeIterator::difference_type
+operator-(const CXmlNodeIterator& __lhs,
+          const CXmlNodeIterator& __rhs)
+{ return __lhs.Index() - __rhs.Index(); }
+
 class CXmlNodelistWrapper
 {
 private:
@@ -1174,9 +1177,16 @@ public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
 
-    CXmlNodelistWrapper(DOMNodeList& pNodelist)
+    CXmlNodelistWrapper(const DOMNodeList& Nodelist)
         :m_refNode(NULL)
-        ,m_pNodelist(pNodelist)
+        ,m_pNodelist(Nodelist)
+    {
+
+    }
+
+    CXmlNodelistWrapper(DOMNodeList* pNodelist)
+        :m_refNode(NULL)
+        ,m_pNodelist(*pNodelist)
     {
 
     }
