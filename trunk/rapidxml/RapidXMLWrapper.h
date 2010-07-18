@@ -12,6 +12,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -28,22 +29,17 @@ class RapidXMLWrapper
 public:
     static wstring widen( const string& str )
     {
-        wostringstream wstm ;
-        const ctype<wchar_t>& ctfacet = 
-            use_facet< ctype<wchar_t> >( wstm.getloc() ) ;
-        for( size_t i=0 ; i<str.size() ; ++i ) 
-            wstm << ctfacet.widen( str[i] ) ;
-        return wstm.str() ;
+        std::wstring temp(str.length(),L' ');
+        mbstowcs(&temp[0], str.c_str(), str.length());
+        return temp; 
     }
 
     static string narrow( const wstring& str )
     {
-        ostringstream stm ;
-        const ctype<char>& ctfacet = 
-            use_facet< ctype<char> >( stm.getloc() ) ;
-        for( size_t i=0 ; i<str.size() ; ++i ) 
-            stm << ctfacet.narrow( (char)str[i], 0 ) ;
-        return stm.str() ;
+        std::string temp(str.length() * 2, ' ');
+        size_t len = wcstombs(&temp[0], str.c_str(), temp.length()); 
+        temp.erase(temp.begin() + len, temp.end());
+        return temp; 
     }
 };
 
