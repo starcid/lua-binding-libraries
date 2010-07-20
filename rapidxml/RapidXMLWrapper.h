@@ -1001,7 +1001,7 @@ public:
 class CXmlNodelistWrapper;
 
 class CXmlNodeIterator
-    : public std::iterator<std::random_access_iterator_tag, CXmlNodeWrapper>
+    : public std::iterator<std::bidirectional_iterator_tag, CXmlNodeWrapper>
 {
 private:
     std::vector<rapidxml::xml_node<>*> m_nodelist;
@@ -1106,10 +1106,10 @@ public:
         return CXmlNodeIterator(iter.Index() + m_nIndex, m_nodelist);
     } 
 
-    //CXmlNodeIterator operator-(CXmlNodeIterator& iter)
-    //{
-    //    return CXmlNodeIterator(iter.Index() - m_nIndex, m_nodelist);
-    //} 
+    CXmlNodeIterator operator-(CXmlNodeIterator& iter)
+    {
+        return CXmlNodeIterator(iter.Index() - m_nIndex, m_nodelist);
+    } 
 
     bool operator>(CXmlNodeIterator& iter)
     {
@@ -1153,11 +1153,6 @@ public:
         return &m_refNode;
     }
 };
-
-inline CXmlNodeIterator::difference_type
-operator-(const CXmlNodeIterator& __lhs,
-          const CXmlNodeIterator& __rhs)
-{ return __lhs.Index() - __rhs.Index(); }
 
 class CXmlNodelistWrapper
 {
