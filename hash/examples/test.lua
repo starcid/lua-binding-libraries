@@ -133,28 +133,28 @@ print( "123456789012345678901234567890123456789012345678901234567890123456789012
 hash.ripemd160("12345678901234567890123456789012345678901234567890123456789012345678901234567890") )
 
 print( "\n\n=====ripemd256=========================================" )
-print( ": ", hash.ripemd256("") )
-print( "a: ", hash.ripemd256("a") )
-print( "abc: ", hash.ripemd256("abc") )
-print( "message digest: ", hash.ripemd256("message digest") )
-print( "abcdefghijklmnopqrstuvwxyz: ", 
-hash.ripemd256("abcdefghijklmnopqrstuvwxyz") )
-print( "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789: ", 
-hash.ripemd256("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") )
-print( "12345678901234567890123456789012345678901234567890123456789012345678901234567890: ", 
-hash.ripemd256("12345678901234567890123456789012345678901234567890123456789012345678901234567890") )
+-- print( ": ", hash.ripemd256("") )
+-- print( "a: ", hash.ripemd256("a") )
+-- print( "abc: ", hash.ripemd256("abc") )
+-- print( "message digest: ", hash.ripemd256("message digest") )
+-- print( "abcdefghijklmnopqrstuvwxyz: ", 
+-- hash.ripemd256("abcdefghijklmnopqrstuvwxyz") )
+-- print( "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789: ", 
+-- hash.ripemd256("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") )
+-- print( "12345678901234567890123456789012345678901234567890123456789012345678901234567890: ", 
+-- hash.ripemd256("12345678901234567890123456789012345678901234567890123456789012345678901234567890") )
 
 print( "\n\n=====ripemd320=========================================" )
-print( ": ", hash.ripemd320("") )
-print( "a: ", hash.ripemd320("a") )
-print( "abc: ", hash.ripemd320("abc") )
-print( "message digest: ", hash.ripemd320("message digest") )
-print( "abcdefghijklmnopqrstuvwxyz: ", 
-hash.ripemd320("abcdefghijklmnopqrstuvwxyz") )
-print( "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789: ", 
-hash.ripemd320("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") )
-print( "12345678901234567890123456789012345678901234567890123456789012345678901234567890: ", 
-hash.ripemd320("12345678901234567890123456789012345678901234567890123456789012345678901234567890") )
+-- print( ": ", hash.ripemd320("") )
+-- print( "a: ", hash.ripemd320("a") )
+-- print( "abc: ", hash.ripemd320("abc") )
+-- print( "message digest: ", hash.ripemd320("message digest") )
+-- print( "abcdefghijklmnopqrstuvwxyz: ", 
+-- hash.ripemd320("abcdefghijklmnopqrstuvwxyz") )
+-- print( "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789: ", 
+-- hash.ripemd320("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") )
+-- print( "12345678901234567890123456789012345678901234567890123456789012345678901234567890: ", 
+-- hash.ripemd320("12345678901234567890123456789012345678901234567890123456789012345678901234567890") )
 
 print( "\n\n=====tiger=========================================" )
 print( ": ", hash.tiger("") )
@@ -504,14 +504,14 @@ hash.emule("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") )
 print( "12345678901234567890123456789012345678901234567890123456789012345678901234567890: ", 
 hash.emule("12345678901234567890123456789012345678901234567890123456789012345678901234567890") )
 
-print( "\n\n=====sum=========================================" )
-print( ": ", hash.sum("") )
-print( "a: ", hash.sum("a") )
-print( "abc: ", hash.sum("abc") )
-print( "message digest: ", hash.sum("message digest") )
+print( "\n\n=====sum eg:md5=========================================" )
+print( ": ", hash.sum("md5", "") )
+print( "a: ", hash.sum("md5", "a") )
+print( "abc: ", hash.sum("md5", "abc") )
+print( "message digest: ", hash.sum("md5", "message digest") )
 print( "abcdefghijklmnopqrstuvwxyz: ", 
-hash.sum("abcdefghijklmnopqrstuvwxyz") )
+hash.sum("md5", "abcdefghijklmnopqrstuvwxyz") )
 print( "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789: ", 
-hash.sum("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") )
+hash.sum("md5", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") )
 print( "12345678901234567890123456789012345678901234567890123456789012345678901234567890: ", 
-hash.sum("12345678901234567890123456789012345678901234567890123456789012345678901234567890") )
+hash.sum("md5", "12345678901234567890123456789012345678901234567890123456789012345678901234567890") )
