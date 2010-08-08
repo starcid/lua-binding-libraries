@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<testDoc>
+
+  <testAttribute index="2"/>
+
+  <testAttribute index="3"/>
+
+  <testAttribute index="4"/>
+
+  <testAttribute index="5"/>
+
+  <testText>10</testText>
+
+  <testText>20</testText>
+
+  <testText>30</testText>
+
+  <testText>40</testText>
+
+  <testText>50</testText>
+
+  <testNode index="100">1000</testNode>
+
+  <testNode index="200">2000</testNode>
+
+  <testNode index="300">3000</testNode>
+
+  <testNode index="400">4000</testNode>
+
+  <testNode index="500">5000</testNode>
+
+  <testAttribute index="1"/>
+
+</testDoc>
